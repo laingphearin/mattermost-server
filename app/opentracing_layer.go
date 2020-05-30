@@ -73,6 +73,14 @@ type OpenTracingAppLayer struct {
 	ctx     context.Context
 }
 
+func (a *OpenTracingAppLayer) UpdateFriendRequest(request *model.FriendRequest) (*model.FriendRequest, *model.AppError) {
+	panic("implement me")
+}
+
+func (a *OpenTracingAppLayer) GetMyFriendRequests() ([]*model.FriendRequest, *model.AppError) {
+	panic("implement me")
+}
+
 func (a *OpenTracingAppLayer) SendFriendRequest(request *model.FriendRequest) (*model.FriendRequest, *model.AppError) {
 	panic("implement me")
 }

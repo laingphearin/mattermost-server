@@ -6,11 +6,10 @@ import (
 )
 
 type Friend struct {
-	UserId1 string `json:"userid1"`
-	UserId2 string `json:"userid2"`
-	IsPending bool `json:"is_pending"`
-	IsBlocked bool `json:"is_blocked"`
-	RequestedTime int64 `json:"requested_time"`
+	UserId 				string   `json:"userid"`
+	FriendId 			string   `json:"friendid"`
+	CreateAt    		int64    `json:"create_at"`
+	UpdateAt			int64	 `json:"update_at"`
 }
 
 

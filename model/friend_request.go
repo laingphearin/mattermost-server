@@ -6,10 +6,11 @@ import (
 )
 
 type FriendRequest struct {
-	UserId              string                  `json:"userid"`
-	FriendId            string                  `json:"friendid"`
-	FriendRequestStatus int 					`json:"friendrequeststatus"`
-
+	UserId              string   `json:"userid"`
+	FriendId            string   `json:"friendid"`
+	FriendRequestStatus int 	 `json:"friendrequeststatus"`
+	CreateAt    		int64    `json:"create_at"`
+	UpdateAt			int64	 `json:"update_at"`
 }
 
 // FriendRequestFromJson will decode the input and return a FriendRequest

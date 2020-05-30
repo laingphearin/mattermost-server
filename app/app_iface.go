@@ -992,4 +992,6 @@ type AppIface interface {
 	WaitForChannelMembership(channelId string, userId string)
 	WriteFile(fr io.Reader, path string) (int64, *model.AppError)
 	SendFriendRequest(request *model.FriendRequest) (*model.FriendRequest, *model.AppError)
+	GetMyFriendRequests() ([]*model.FriendRequest, *model.AppError)
+	UpdateFriendRequest(request *model.FriendRequest) (*model.FriendRequest, *model.AppError)
 }

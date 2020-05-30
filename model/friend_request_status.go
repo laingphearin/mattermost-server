@@ -1,13 +1,13 @@
 package model
 
 type FriendRequestStatusEnum struct {
-	Pending int8
+	Pending int
 	Refuse int
 	Agree int
 	Ignore int
 }
 
-var FriendRequestStatus = &FriendRequestStatusEnum{
+var FriendRequestStatus = &FriendRequestStatusEnum {
 	Pending: 0,
 	Refuse: 1,
 	Agree: 2,

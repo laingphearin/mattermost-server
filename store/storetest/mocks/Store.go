@@ -18,6 +18,10 @@ type Store struct {
 	mock.Mock
 }
 
+func (_m *Store) Friend() store.FriendStore {
+	panic("implement me")
+}
+
 func (_m *Store) FriendRequest() store.FriendRequestStore {
 	panic("implement me")
 }

@@ -267,16 +267,28 @@ func (a *App) createUserOrGuest(user *model.User, guest bool) (*model.User, *mod
 	return ruser, nil
 }
 
-func (a *App) SendFriendRequest(request *model.FriendRequest) (*model.FriendRequest, *model.AppError){
-	rfriendRequest, err := a.saveFriendRequest(request)
+func (a *App) UpdateFriendRequest(request *model.FriendRequest) (*model.FriendRequest, *model.AppError){
+	//TODO : [mine] if FriendRequestStatus = Pending: 0 will return error
+	rfriendRequest, err := a.Srv().Store.FriendRequest().Update(request)
+	//TODO FriendRequestStatus = Agree: 2 they are now friend
+	if rfriendRequest.FriendRequestStatus == model.FriendRequestStatus.Agree {
+		a.Srv().Store.Friend().Save(&model.Friend{UserId: rfriendRequest.UserId, FriendId: rfriendRequest.FriendId})
+		a.Srv().Store.Friend().Save(&model.Friend{UserId: rfriendRequest.FriendId, FriendId: rfriendRequest.UserId})
+	}
 	return rfriendRequest, err
 }
 
-func (a *App) saveFriendRequest(request *model.FriendRequest) (*model.FriendRequest, *model.AppError)  {
-	request.FriendRequestStatus = model.FriendRequestStatus.Agree
+func (a *App) SendFriendRequest(request *model.FriendRequest) (*model.FriendRequest, *model.AppError){
+	request.FriendRequestStatus = model.FriendRequestStatus.Pending
+	request.CreateAt = model.GetMillis()
+	request.UpdateAt = model.GetMillis()
 	rfriendRequest, err := a.Srv().Store.FriendRequest().Save(request)
 	return rfriendRequest, err
+}
 
+func (a *App) GetMyFriendRequests() ([]*model.FriendRequest, *model.AppError){
+	friendRequests, appError := a.Srv().Store.User().GetMyFriendRequests(a.Session().UserId)
+	return friendRequests, appError
 }
 
 

@@ -100,7 +100,8 @@ type SqlSupplierStores struct {
 	group                store.GroupStore
 	UserTermsOfService   store.UserTermsOfServiceStore
 	linkMetadata         store.LinkMetadataStore
-	friendRequest 		 store.FriendRequestStore
+	friendRequest        store.FriendRequestStore
+	friend               store.FriendStore
 }
 
 type SqlSupplier struct {
@@ -117,6 +118,10 @@ type SqlSupplier struct {
 	context        context.Context
 	license        *model.License
 	licenseMutex   sync.Mutex
+}
+
+func (ss *SqlSupplier) Friend() store.FriendStore {
+	return ss.stores.friend
 }
 
 func (ss *SqlSupplier) FriendRequest() store.FriendRequestStore {
@@ -174,6 +179,7 @@ func NewSqlSupplier(settings model.SqlSettings, metrics einterfaces.MetricsInter
 	supplier.stores.scheme = newSqlSchemeStore(supplier)
 	supplier.stores.group = newSqlGroupStore(supplier)
 	supplier.stores.friendRequest = newSqlFriendRequestStore(supplier)
+	supplier.stores.friend = newSqlFriendStore(supplier)
 
 	err := supplier.GetMaster().CreateTablesIfNotExists()
 	if err != nil {

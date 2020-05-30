@@ -65,6 +65,7 @@ type Store interface {
 	SetContext(context context.Context)
 	Context() context.Context
 	FriendRequest() FriendRequestStore
+	Friend() FriendStore
 }
 
 type TeamStore interface {
@@ -272,7 +273,13 @@ type PostStore interface {
 }
 
 type FriendRequestStore interface {
-	Save(user *model.FriendRequest) (*model.FriendRequest, *model.AppError)
+	Save(friendRequest *model.FriendRequest) (*model.FriendRequest, *model.AppError)
+	Update(friendRequest *model.FriendRequest) (*model.FriendRequest, *model.AppError)
+}
+
+type FriendStore interface {
+	Save(friend *model.Friend) (*model.Friend, *model.AppError)
+	Update(friend *model.Friend) (*model.Friend, *model.AppError)
 }
 
 type UserStore interface {
@@ -341,6 +348,7 @@ type UserStore interface {
 	DeactivateGuests() ([]string, *model.AppError)
 	AutocompleteUsersInChannel(teamId, channelId, term string, options *model.UserSearchOptions) (*model.UserAutocompleteInChannel, *model.AppError)
 	GetKnownUsers(userID string) ([]string, *model.AppError)
+	GetMyFriendRequests(currentUserId string) ([]*model.FriendRequest, *model.AppError)
 }
 
 type BotStore interface {

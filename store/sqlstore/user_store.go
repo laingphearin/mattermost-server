@@ -1790,3 +1790,18 @@ func (us SqlUserStore) GetKnownUsers(userId string) ([]string, *model.AppError) 
 
 	return userIds, nil
 }
+
+func (us SqlUserStore) GetMyFriendRequests(currentUserId string) ([]*model.FriendRequest, *model.AppError) {
+	var friendRequests []*model.FriendRequest
+	friendRequestsQuery, args, _ := us.getQueryBuilder().
+		Select("*").
+		From("friendrequest").
+		Where(sq.Eq{"FriendId": currentUserId}).
+		ToSql()
+	_, err := us.GetSearchReplica().Select(&friendRequests, friendRequestsQuery, args...)
+	if err != nil {
+		return nil, model.NewAppError("SqlUserStore.GetKnownUsers", "store.sql_user.get_known_users.get_users.app_error", nil, err.Error(), http.StatusInternalServerError)
+	}
+
+	return friendRequests, nil
+}

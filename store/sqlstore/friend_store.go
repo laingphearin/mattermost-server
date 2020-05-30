@@ -1,9 +1,8 @@
 package sqlstore
 
 import (
-"github.com/mattermost/mattermost-server/v5/einterfaces"
-"github.com/mattermost/mattermost-server/v5/model"
-"github.com/mattermost/mattermost-server/v5/store"
+	"github.com/mattermost/mattermost-server/v5/model"
+	"github.com/mattermost/mattermost-server/v5/store"
 )
 
 type SqlFriendStore struct {
@@ -20,13 +19,13 @@ func (fs SqlFriendStore) Update(friend *model.Friend) (*model.Friend, *model.App
 	return friend, nil
 }
 
-func newSqlFriendStore(sqlStore SqlStore, metrics einterfaces.MetricsInterface) store.FriendStore {
+func newSqlFriendStore(sqlStore SqlStore) store.FriendStore {
 	s := &SqlFriendStore{
 		SqlStore: sqlStore,
 	}
 
 	for _, db := range sqlStore.GetAllConns() {
-		db.AddTableWithName(model.Friend{}, "Friend").SetKeys(false, "UserId1", "UserId2")
+		db.AddTableWithName(model.Friend{}, "Friend").SetKeys(false, "UserId", "FriendId")
 	}
 
 	return s
