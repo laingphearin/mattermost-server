@@ -22,6 +22,7 @@ type Store interface {
 	Channel() ChannelStore
 	Post() PostStore
 	User() UserStore
+
 	Bot() BotStore
 	Audit() AuditStore
 	ClusterDiscovery() ClusterDiscoveryStore
@@ -63,6 +64,7 @@ type Store interface {
 	CheckIntegrity() <-chan IntegrityCheckResult
 	SetContext(context context.Context)
 	Context() context.Context
+	FriendRequest() FriendRequestStore
 }
 
 type TeamStore interface {
@@ -267,6 +269,10 @@ type PostStore interface {
 	GetRepliesForExport(parentId string) ([]*model.ReplyForExport, *model.AppError)
 	GetDirectPostParentsForExportAfter(limit int, afterId string) ([]*model.DirectPostForExport, *model.AppError)
 	SearchPostsInTeamForUser(paramsList []*model.SearchParams, userId, teamId string, isOrSearch, includeDeletedChannels bool, page, perPage int) (*model.PostSearchResults, *model.AppError)
+}
+
+type FriendRequestStore interface {
+	Save(user *model.FriendRequest) (*model.FriendRequest, *model.AppError)
 }
 
 type UserStore interface {

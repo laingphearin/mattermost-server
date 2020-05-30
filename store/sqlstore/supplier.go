@@ -100,6 +100,7 @@ type SqlSupplierStores struct {
 	group                store.GroupStore
 	UserTermsOfService   store.UserTermsOfServiceStore
 	linkMetadata         store.LinkMetadataStore
+	friendRequest 		 store.FriendRequestStore
 }
 
 type SqlSupplier struct {
@@ -116,6 +117,10 @@ type SqlSupplier struct {
 	context        context.Context
 	license        *model.License
 	licenseMutex   sync.Mutex
+}
+
+func (ss *SqlSupplier) FriendRequest() store.FriendRequestStore {
+	return ss.stores.friendRequest
 }
 
 type TraceOnAdapter struct{}
@@ -168,6 +173,7 @@ func NewSqlSupplier(settings model.SqlSettings, metrics einterfaces.MetricsInter
 	supplier.stores.role = newSqlRoleStore(supplier)
 	supplier.stores.scheme = newSqlSchemeStore(supplier)
 	supplier.stores.group = newSqlGroupStore(supplier)
+	supplier.stores.friendRequest = newSqlFriendRequestStore(supplier)
 
 	err := supplier.GetMaster().CreateTablesIfNotExists()
 	if err != nil {

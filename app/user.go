@@ -9,6 +9,17 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/disintegration/imaging"
+	"github.com/golang/freetype"
+	"github.com/golang/freetype/truetype"
+	"github.com/mattermost/mattermost-server/v5/einterfaces"
+	"github.com/mattermost/mattermost-server/v5/mlog"
+	"github.com/mattermost/mattermost-server/v5/model"
+	"github.com/mattermost/mattermost-server/v5/plugin"
+	"github.com/mattermost/mattermost-server/v5/services/mfa"
+	"github.com/mattermost/mattermost-server/v5/store"
+	"github.com/mattermost/mattermost-server/v5/utils"
+	"github.com/mattermost/mattermost-server/v5/utils/fileutils"
 	"hash/fnv"
 	"image"
 	"image/color"
@@ -23,18 +34,6 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
-
-	"github.com/disintegration/imaging"
-	"github.com/golang/freetype"
-	"github.com/golang/freetype/truetype"
-	"github.com/mattermost/mattermost-server/v5/einterfaces"
-	"github.com/mattermost/mattermost-server/v5/mlog"
-	"github.com/mattermost/mattermost-server/v5/model"
-	"github.com/mattermost/mattermost-server/v5/plugin"
-	"github.com/mattermost/mattermost-server/v5/services/mfa"
-	"github.com/mattermost/mattermost-server/v5/store"
-	"github.com/mattermost/mattermost-server/v5/utils"
-	"github.com/mattermost/mattermost-server/v5/utils/fileutils"
 )
 
 const (
@@ -267,6 +266,19 @@ func (a *App) createUserOrGuest(user *model.User, guest bool) (*model.User, *mod
 
 	return ruser, nil
 }
+
+func (a *App) SendFriendRequest(request *model.FriendRequest) (*model.FriendRequest, *model.AppError){
+	rfriendRequest, err := a.saveFriendRequest(request)
+	return rfriendRequest, err
+}
+
+func (a *App) saveFriendRequest(request *model.FriendRequest) (*model.FriendRequest, *model.AppError)  {
+	request.FriendRequestStatus = model.FriendRequestStatus.Agree
+	rfriendRequest, err := a.Srv().Store.FriendRequest().Save(request)
+	return rfriendRequest, err
+
+}
+
 
 func (a *App) createUser(user *model.User) (*model.User, *model.AppError) {
 	user.MakeNonNil()
