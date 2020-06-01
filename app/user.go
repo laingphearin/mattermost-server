@@ -9,6 +9,17 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/disintegration/imaging"
+	"github.com/golang/freetype"
+	"github.com/golang/freetype/truetype"
+	"github.com/mattermost/mattermost-server/v5/einterfaces"
+	"github.com/mattermost/mattermost-server/v5/mlog"
+	"github.com/mattermost/mattermost-server/v5/model"
+	"github.com/mattermost/mattermost-server/v5/plugin"
+	"github.com/mattermost/mattermost-server/v5/services/mfa"
+	"github.com/mattermost/mattermost-server/v5/store"
+	"github.com/mattermost/mattermost-server/v5/utils"
+	"github.com/mattermost/mattermost-server/v5/utils/fileutils"
 	"hash/fnv"
 	"image"
 	"image/color"
@@ -23,18 +34,6 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
-
-	"github.com/disintegration/imaging"
-	"github.com/golang/freetype"
-	"github.com/golang/freetype/truetype"
-	"github.com/mattermost/mattermost-server/v5/einterfaces"
-	"github.com/mattermost/mattermost-server/v5/mlog"
-	"github.com/mattermost/mattermost-server/v5/model"
-	"github.com/mattermost/mattermost-server/v5/plugin"
-	"github.com/mattermost/mattermost-server/v5/services/mfa"
-	"github.com/mattermost/mattermost-server/v5/store"
-	"github.com/mattermost/mattermost-server/v5/utils"
-	"github.com/mattermost/mattermost-server/v5/utils/fileutils"
 )
 
 const (
@@ -267,6 +266,31 @@ func (a *App) createUserOrGuest(user *model.User, guest bool) (*model.User, *mod
 
 	return ruser, nil
 }
+
+func (a *App) UpdateFriendRequest(request *model.FriendRequest) (*model.FriendRequest, *model.AppError){
+	//TODO : [mine] if FriendRequestStatus = Pending: 0 will return error
+	rfriendRequest, err := a.Srv().Store.FriendRequest().Update(request)
+	//TODO FriendRequestStatus = Agree: 2 they are now friend
+	if rfriendRequest.FriendRequestStatus == model.FriendRequestStatus.Agree {
+		a.Srv().Store.Friend().Save(&model.Friend{UserId: rfriendRequest.UserId, FriendId: rfriendRequest.FriendId})
+		a.Srv().Store.Friend().Save(&model.Friend{UserId: rfriendRequest.FriendId, FriendId: rfriendRequest.UserId})
+	}
+	return rfriendRequest, err
+}
+
+func (a *App) SendFriendRequest(request *model.FriendRequest) (*model.FriendRequest, *model.AppError){
+	request.FriendRequestStatus = model.FriendRequestStatus.Pending
+	request.CreateAt = model.GetMillis()
+	request.UpdateAt = model.GetMillis()
+	rfriendRequest, err := a.Srv().Store.FriendRequest().Save(request)
+	return rfriendRequest, err
+}
+
+func (a *App) GetMyFriendRequests() ([]*model.FriendRequest, *model.AppError){
+	friendRequests, appError := a.Srv().Store.User().GetMyFriendRequests(a.Session().UserId)
+	return friendRequests, appError
+}
+
 
 func (a *App) createUser(user *model.User) (*model.User, *model.AppError) {
 	user.MakeNonNil()
