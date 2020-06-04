@@ -22,6 +22,7 @@ type Store interface {
 	Channel() ChannelStore
 	Post() PostStore
 	User() UserStore
+
 	Bot() BotStore
 	Audit() AuditStore
 	ClusterDiscovery() ClusterDiscoveryStore
@@ -63,6 +64,8 @@ type Store interface {
 	CheckIntegrity() <-chan IntegrityCheckResult
 	SetContext(context context.Context)
 	Context() context.Context
+	FriendRequest() FriendRequestStore
+	Friend() FriendStore
 }
 
 type TeamStore interface {
@@ -269,6 +272,16 @@ type PostStore interface {
 	SearchPostsInTeamForUser(paramsList []*model.SearchParams, userId, teamId string, isOrSearch, includeDeletedChannels bool, page, perPage int) (*model.PostSearchResults, *model.AppError)
 }
 
+type FriendRequestStore interface {
+	Save(friendRequest *model.FriendRequest) (*model.FriendRequest, *model.AppError)
+	Update(friendRequest *model.FriendRequest) (*model.FriendRequest, *model.AppError)
+}
+
+type FriendStore interface {
+	Save(friend *model.Friend) (*model.Friend, *model.AppError)
+	Update(friend *model.Friend) (*model.Friend, *model.AppError)
+}
+
 type UserStore interface {
 	Save(user *model.User) (*model.User, *model.AppError)
 	Update(user *model.User, allowRoleUpdate bool) (*model.UserUpdate, *model.AppError)
@@ -335,6 +348,9 @@ type UserStore interface {
 	DeactivateGuests() ([]string, *model.AppError)
 	AutocompleteUsersInChannel(teamId, channelId, term string, options *model.UserSearchOptions) (*model.UserAutocompleteInChannel, *model.AppError)
 	GetKnownUsers(userID string) ([]string, *model.AppError)
+	GetMyFriendRequests(currentUserId string) ([]*model.User, *model.AppError)
+	GetMyFriends(currentUserId string) ([]*model.User, *model.AppError)
+	GetMyFriend(currentUserId string, friendId string)  ([]*model.User, *model.AppError)
 }
 
 type BotStore interface {

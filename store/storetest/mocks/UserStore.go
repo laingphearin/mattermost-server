@@ -15,6 +15,18 @@ type UserStore struct {
 	mock.Mock
 }
 
+func (_m *UserStore) GetMyFriend(currentUserId string, friendId string) ([]*model.User, *model.AppError) {
+	panic("implement me")
+}
+
+func (_m *UserStore) GetMyFriends(currentUserId string) ([]*model.User, *model.AppError) {
+	panic("implement me")
+}
+
+func (_m *UserStore) GetMyFriendRequests(currentUserId string) ([]*model.User, *model.AppError) {
+	panic("implement me")
+}
+
 // AnalyticsActiveCount provides a mock function with given fields: time, options
 func (_m *UserStore) AnalyticsActiveCount(time int64, options model.UserCountOptions) (int64, *model.AppError) {
 	ret := _m.Called(time, options)

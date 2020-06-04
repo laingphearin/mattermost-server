@@ -573,6 +573,8 @@ type AppIface interface {
 	GetLogsSkipSend(page, perPage int) ([]string, *model.AppError)
 	GetMessageForNotification(post *model.Post, translateFunc i18n.TranslateFunc) string
 	GetMultipleEmojiByName(names []string) ([]*model.Emoji, *model.AppError)
+	GetMyFriendRequests() ([]*model.User, *model.AppError)
+	GetMyFriends() ([]*model.User, *model.AppError)
 	GetNewUsersForTeamPage(teamId string, page, perPage int, asAdmin bool, viewRestrictions *model.ViewUsersRestrictions) ([]*model.User, *model.AppError)
 	GetNextPostIdFromPostList(postList *model.PostList) string
 	GetNotificationNameFormat(user *model.User) string
@@ -859,6 +861,7 @@ type AppIface interface {
 	SendDiagnostic(event string, properties map[string]interface{})
 	SendEmailVerification(user *model.User, newEmail string) *model.AppError
 	SendEphemeralPost(userId string, post *model.Post) *model.Post
+	SendFriendRequest(request *model.FriendRequest) (*model.FriendRequest, *model.AppError)
 	SendInviteEmails(team *model.Team, senderName string, senderUserId string, invites []string, siteURL string)
 	SendNotifications(post *model.Post, team *model.Team, channel *model.Channel, sender *model.User, parentPostList *model.PostList, setOnline bool) ([]string, error)
 	SendPasswordReset(email string, siteURL string) (bool, *model.AppError)
@@ -950,6 +953,7 @@ type AppIface interface {
 	UpdateCommand(oldCmd, updatedCmd *model.Command) (*model.Command, *model.AppError)
 	UpdateConfig(f func(*model.Config))
 	UpdateEphemeralPost(userId string, post *model.Post) *model.Post
+	UpdateFriendRequest(request *model.FriendRequest) (*model.FriendRequest, *model.AppError)
 	UpdateGroup(group *model.Group) (*model.Group, *model.AppError)
 	UpdateGroupSyncable(groupSyncable *model.GroupSyncable) (*model.GroupSyncable, *model.AppError)
 	UpdateIncomingWebhook(oldHook, updatedHook *model.IncomingWebhook) (*model.IncomingWebhook, *model.AppError)
@@ -991,4 +995,5 @@ type AppIface interface {
 	ViewChannel(view *model.ChannelView, userId string, currentSessionId string) (map[string]int64, *model.AppError)
 	WaitForChannelMembership(channelId string, userId string)
 	WriteFile(fr io.Reader, path string) (int64, *model.AppError)
+	IsFriend(userId string) (bool, *model.AppError)
 }
