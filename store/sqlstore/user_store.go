@@ -1790,3 +1790,51 @@ func (us SqlUserStore) GetKnownUsers(userId string) ([]string, *model.AppError) 
 
 	return userIds, nil
 }
+
+func (us SqlUserStore) GetMyFriendRequests(currentUserId string) ([]*model.User, *model.AppError) {
+	var friendRequests []*model.User
+	friendRequestsQuery, args, _ := us.getQueryBuilder().
+		Select("us.Id, us.UserName").
+		From("FriendRequest AS fr").
+		Join("Users AS us ON fr.FriendId = us.Id").
+		Where(sq.Eq{"fr.UserId": currentUserId}).
+		ToSql()
+	_, err := us.GetSearchReplica().Select(&friendRequests, friendRequestsQuery, args...)
+	if err != nil {
+		return nil, model.NewAppError("SqlUserStore.GetKnownUsers", "store.sql_user.get_known_users.get_users.app_error", nil, err.Error(), http.StatusInternalServerError)
+	}
+
+	return friendRequests, nil
+}
+
+func (us SqlUserStore) GetMyFriends(currentUserId string) ([]*model.User, *model.AppError) {
+	var friends []*model.User
+	friendsQuery, args, _ := us.getQueryBuilder().
+		Select("us.Id, us.UserName").
+		From("Friend as fr").
+		Join("Users AS us ON fr.FriendId = us.Id").
+		Where(sq.Eq{"UserId": currentUserId}).
+		ToSql()
+	_, err := us.GetSearchReplica().Select(&friends, friendsQuery, args...)
+	if err != nil {
+		return nil, model.NewAppError("SqlUserStore.GetKnownUsers", "store.sql_user.get_known_users.get_users.app_error", nil, err.Error(), http.StatusInternalServerError)
+	}
+
+	return friends, nil
+}
+
+func (us SqlUserStore) GetMyFriend(userId string, friendId string) ([]*model.User, *model.AppError) {
+	var friends []*model.User
+	friendsQuery, args, _ := us.getQueryBuilder().
+		Select("us.Id, us.UserName").
+		From("Friend as fr").
+		Join("Users AS us ON fr.FriendId = us.Id").
+		Where(sq.Eq{"UserId": userId , "FriendId": friendId}).
+		ToSql()
+	_, err := us.GetSearchReplica().Select(&friends, friendsQuery, args...)
+	if err != nil {
+		return friends, model.NewAppError("SqlUserStore.GetKnownUsers", "store.sql_user.get_known_users.get_users.app_error", nil, err.Error(), http.StatusInternalServerError)
+	}
+
+	return friends, nil
+}

@@ -77,6 +77,7 @@ type Params struct {
 	IncludeDeleted            bool
 	FilterAllowReference      bool
 	FilterParentTeamPermitted bool
+	FriendId 				  string
 }
 
 func ParamsFromRequest(r *http.Request) *Params {

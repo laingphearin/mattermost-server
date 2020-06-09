@@ -73,6 +73,10 @@ type OpenTracingAppLayer struct {
 	ctx     context.Context
 }
 
+func (a *OpenTracingAppLayer) IsFriend(userId string) (bool, *model.AppError) {
+	panic("implement me")
+}
+
 func (a *OpenTracingAppLayer) ActivateMfa(userId string, token string) *model.AppError {
 	origCtx := a.ctx
 	span, newCtx := tracing.StartSpanWithParentByContext(a.ctx, "app.ActivateMfa")
@@ -5987,6 +5991,50 @@ func (a *OpenTracingAppLayer) GetMultipleEmojiByName(names []string) ([]*model.E
 
 	defer span.Finish()
 	resultVar0, resultVar1 := a.app.GetMultipleEmojiByName(names)
+
+	if resultVar1 != nil {
+		span.LogFields(spanlog.Error(resultVar1))
+		ext.Error.Set(span, true)
+	}
+
+	return resultVar0, resultVar1
+}
+
+func (a *OpenTracingAppLayer) GetMyFriendRequests() ([]*model.User, *model.AppError) {
+	origCtx := a.ctx
+	span, newCtx := tracing.StartSpanWithParentByContext(a.ctx, "app.GetMyFriendRequests")
+
+	a.ctx = newCtx
+	a.app.Srv().Store.SetContext(newCtx)
+	defer func() {
+		a.app.Srv().Store.SetContext(origCtx)
+		a.ctx = origCtx
+	}()
+
+	defer span.Finish()
+	resultVar0, resultVar1 := a.app.GetMyFriendRequests()
+
+	if resultVar1 != nil {
+		span.LogFields(spanlog.Error(resultVar1))
+		ext.Error.Set(span, true)
+	}
+
+	return resultVar0, resultVar1
+}
+
+func (a *OpenTracingAppLayer) GetMyFriends() ([]*model.User, *model.AppError) {
+	origCtx := a.ctx
+	span, newCtx := tracing.StartSpanWithParentByContext(a.ctx, "app.GetMyFriends")
+
+	a.ctx = newCtx
+	a.app.Srv().Store.SetContext(newCtx)
+	defer func() {
+		a.app.Srv().Store.SetContext(origCtx)
+		a.ctx = origCtx
+	}()
+
+	defer span.Finish()
+	resultVar0, resultVar1 := a.app.GetMyFriends()
 
 	if resultVar1 != nil {
 		span.LogFields(spanlog.Error(resultVar1))
@@ -12503,6 +12551,28 @@ func (a *OpenTracingAppLayer) SendEphemeralPost(userId string, post *model.Post)
 	return resultVar0
 }
 
+func (a *OpenTracingAppLayer) SendFriendRequest(request *model.FriendRequest) (*model.FriendRequest, *model.AppError) {
+	origCtx := a.ctx
+	span, newCtx := tracing.StartSpanWithParentByContext(a.ctx, "app.SendFriendRequest")
+
+	a.ctx = newCtx
+	a.app.Srv().Store.SetContext(newCtx)
+	defer func() {
+		a.app.Srv().Store.SetContext(origCtx)
+		a.ctx = origCtx
+	}()
+
+	defer span.Finish()
+	resultVar0, resultVar1 := a.app.SendFriendRequest(request)
+
+	if resultVar1 != nil {
+		span.LogFields(spanlog.Error(resultVar1))
+		ext.Error.Set(span, true)
+	}
+
+	return resultVar0, resultVar1
+}
+
 func (a *OpenTracingAppLayer) SendInviteEmails(team *model.Team, senderName string, senderUserId string, invites []string, siteURL string) {
 	origCtx := a.ctx
 	span, newCtx := tracing.StartSpanWithParentByContext(a.ctx, "app.SendInviteEmails")
@@ -14286,6 +14356,28 @@ func (a *OpenTracingAppLayer) UpdateEphemeralPost(userId string, post *model.Pos
 	resultVar0 := a.app.UpdateEphemeralPost(userId, post)
 
 	return resultVar0
+}
+
+func (a *OpenTracingAppLayer) UpdateFriendRequest(request *model.FriendRequest) (*model.FriendRequest, *model.AppError) {
+	origCtx := a.ctx
+	span, newCtx := tracing.StartSpanWithParentByContext(a.ctx, "app.UpdateFriendRequest")
+
+	a.ctx = newCtx
+	a.app.Srv().Store.SetContext(newCtx)
+	defer func() {
+		a.app.Srv().Store.SetContext(origCtx)
+		a.ctx = origCtx
+	}()
+
+	defer span.Finish()
+	resultVar0, resultVar1 := a.app.UpdateFriendRequest(request)
+
+	if resultVar1 != nil {
+		span.LogFields(spanlog.Error(resultVar1))
+		ext.Error.Set(span, true)
+	}
+
+	return resultVar0, resultVar1
 }
 
 func (a *OpenTracingAppLayer) UpdateGroup(group *model.Group) (*model.Group, *model.AppError) {
